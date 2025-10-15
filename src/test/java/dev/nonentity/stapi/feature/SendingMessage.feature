@@ -1,8 +1,5 @@
 Feature: Producer sending a message
 
-  Background:
-    * configure url = "http://localhost:8080"
-
   @send_message @negative
   Scenario: Sending a message with malformed details.
     # GIVEN I submit a malformed request to send a message without subject

@@ -7,11 +7,14 @@ import dev.nonentity.stapi.account.repository.UserAccountRepository;
 import dev.nonentity.stapi.common.RequestValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -52,4 +55,12 @@ public class StandardUserAccountService implements UserAccountService {
             .map(ExistingUserAccount::fromEntity);
   }
 
+  @Override
+  public Set<ExistingUserAccount> findAll() {
+    log.info("Retrieving all existing user accounts");
+    return this.repository.findAll(Sort.by("name").ascending())
+            .stream()
+            .map(ExistingUserAccount::fromEntity)
+            .collect(Collectors.toSet());
+  }
 }

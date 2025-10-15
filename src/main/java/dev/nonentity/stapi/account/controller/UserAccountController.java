@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -27,6 +28,14 @@ public class UserAccountController {
     this.userAccountService = userAccountService;
   }
 
+  @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<Set<ExistingUserAccount>> retrieveAllUserAccounts() {
+    log.info("Received request to retrieve all existing user accounts.");
+    return ResponseEntity.ok(
+            this.userAccountService.findAll()
+    );
+  }
+
   @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ExistingUserAccount> createUserAccount(@Valid @RequestBody CreateUserAccount request) {
     log.info("Received request to create a new user account.");
@@ -37,8 +46,8 @@ public class UserAccountController {
   public ResponseEntity<ExistingUserAccount> findUserAccount(@PathVariable("id") UUID userAccountId) {
     log.info("Received request to retrieve an existing user account using its id.");
     return this.userAccountService.findById(userAccountId)
-          .map(ResponseEntity::ok)
-          .orElse(ResponseEntity.notFound().build());
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
   }
 
 }

@@ -1,7 +1,58 @@
 Feature: Managing user accounts.
 
-  Background:
-    * configure url = "http://localhost:8080"
+  @user_account
+  Scenario: Retrieving all user accounts available
+    # GIVEN I request to retrieve all user accounts available
+    Given path "/api/v1/user"
+    And method get
+    # THEN the request is accepted
+    Then status 200
+    # AND the response is an empty list
+    * match response == []
+
+    # WHEN I request to create an user account providing valid details for all required fields
+    Given request
+      """
+      {
+        "fullName": "User B",
+        "login": "user.b",
+        "password": "password"
+      }
+      """
+    And path "/api/v1/user"
+    When method post
+    # THEN the user account is successfully created
+    Then status 200
+
+    # WHEN I request to create an user account providing a full name alphabetically preceding the previous account full name
+    Given request
+      """
+      {
+        "fullName": "User A",
+        "login": "user.a",
+        "password": "password"
+      }
+      """
+    And path "/api/v1/user"
+    When method post
+    # THEN the user account is successfully created
+    Then status 200
+
+    # WHEN I request to retrieve all the user accounts available
+    Given path "/api/v1/user"
+    When method get
+    # THEN the response contains the user account sorted alphabetically
+    Then status 200
+    * print response
+    And match response[0].fullName == "User A"
+    And match response[1].fullName == "User B"
+    # AND non-sensitive user account details is included in the response
+    And match response[0].id == "#present"
+    And match response[0].login == "user.a"
+    And match response[0].enabled == true
+    # AND there is no secret or password included in the response
+    And match response[0].secret == "#notpresent"
+    And match response[0].password == "#notpresent"
 
   @user_account
   Scenario: Creating a valid user account.
@@ -18,7 +69,7 @@ Feature: Managing user accounts.
     # THEN the request is rejected
     Then status 400
     # AND the response reports that the login field of CreateUserAccount request can't be null
-    * match response["type"] == "CreateUserAccount"
+    And match response.type == "CreateUserAccount"
     * match karate.jsonPath(response, "$.violations[?(@.field=='login')].messages") == [["must not be null"]]
 
     # WHEN I request to create a new user account providing valid details for all required fields
