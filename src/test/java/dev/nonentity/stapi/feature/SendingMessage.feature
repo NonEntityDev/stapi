@@ -18,6 +18,6 @@ Feature: Producer sending a message
     # THEN the response is BAD_REQUEST
     Then status 400
     # AND the response reports sendMessageRequest type is the invalid contract structure
-    * match response["type"] == "sendMessageRequest"
+    * match response["type"] == "SendMessageRequest"
     # AND the response contains the violation message for the subject field
     * match karate.jsonPath(response, "$.violations[?(@.field=='subject')].messages") == [["must not be null"]]
