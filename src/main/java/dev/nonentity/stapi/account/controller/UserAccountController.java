@@ -7,10 +7,14 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -27,6 +31,14 @@ public class UserAccountController {
   public ResponseEntity<ExistingUserAccount> createUserAccount(@Valid @RequestBody CreateUserAccount request) {
     log.info("Received request to create a new user account.");
     return ResponseEntity.ok(this.userAccountService.createUserAccount(request));
+  }
+
+  @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ExistingUserAccount> findUserAccount(@PathVariable("id") UUID userAccountId) {
+    log.info("Received request to retrieve an existing user account using its id.");
+    return this.userAccountService.findById(userAccountId)
+          .map(ResponseEntity::ok)
+          .orElse(ResponseEntity.notFound().build());
   }
 
 }

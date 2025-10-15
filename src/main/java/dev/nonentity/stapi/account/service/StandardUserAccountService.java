@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -41,6 +42,14 @@ public class StandardUserAccountService implements UserAccountService {
 
     log.info("New user account successfully created.");
     return persistedUserAccount;
+  }
+
+  @Override
+  public Optional<ExistingUserAccount> findById(UUID userAccountId) {
+    log.info("Retrieving user account by id.");
+    log.debug("Received user account id: {}", userAccountId);
+    return this.repository.findById(userAccountId)
+            .map(ExistingUserAccount::fromEntity);
   }
 
 }
