@@ -1,4 +1,4 @@
-package dev.nonentity.stapi.controller.advice;
+package dev.nonentity.stapi.common;
 
 import dev.nonentity.stapi.model.request.InvalidRequestResponse;
 import dev.nonentity.stapi.model.request.RequestValidationViolation;
@@ -30,7 +30,14 @@ public class RequestValidationAdvice {
             .map((Map.Entry<String, List<FieldError>> errorsPerField) -> new RequestValidationViolation(errorsPerField.getKey(), errorsPerField.getValue().stream().map(FieldError::getDefaultMessage).collect(Collectors.toSet())))
             .collect(Collectors.toSet());
 
-    InvalidRequestResponse response = new InvalidRequestResponse(validationResult.getObjectName(), violations);
+    InvalidRequestResponse response = new InvalidRequestResponse(validationResult.getTarget().getClass().getSimpleName(), violations);
+    return ResponseEntity.badRequest().body(response);
+  }
+
+  @ExceptionHandler(RequestValidationException.class)
+  public ResponseEntity<InvalidRequestResponse> handleRequestValidationException(RequestValidationException exception) {
+    RequestValidationViolation violation = new RequestValidationViolation(exception.getField(), Set.of(exception.getMessage()));
+    InvalidRequestResponse response = new InvalidRequestResponse(exception.getRequestType(), Set.of(violation));
     return ResponseEntity.badRequest().body(response);
   }
 
