@@ -11,9 +11,9 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -35,8 +35,7 @@ public abstract class Account {
   private String name;
 
   @NotNull
-  @Length(min = 3, max = 40)
-  @Pattern(regexp = "^[a-zA-Z0-9.\\-_]*$")
+  @Length(min = 3, max = 140)
   private String alias;
 
   @NotNull

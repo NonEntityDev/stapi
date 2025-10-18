@@ -11,7 +11,7 @@ class STAPITest {
 
   @Karate.Test
   Karate runAll() {
-    return Karate.run().relativeTo(getClass()).configDir("classpath:");
+    return Karate.run().tags("~@helper").relativeTo(getClass()).configDir("classpath:");
   }
 
 }

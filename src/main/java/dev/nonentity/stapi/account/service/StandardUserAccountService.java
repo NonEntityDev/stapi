@@ -11,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -58,9 +60,21 @@ public class StandardUserAccountService implements UserAccountService {
   @Override
   public Set<ExistingUserAccount> findAll() {
     log.info("Retrieving all existing user accounts");
-    return this.repository.findAll(Sort.by("name").ascending())
+    return this.repository.findAll()
             .stream()
             .map(ExistingUserAccount::fromEntity)
-            .collect(Collectors.toSet());
+            .sorted(Comparator.comparing(ExistingUserAccount::getFullName))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+  }
+
+  @Override
+  public Optional<ExistingUserAccount> removeUserAccount(UUID userAccountId) {
+    log.info("Fetching and removing existing user account.");
+    log.debug("Id of user account to be removed: {}", userAccountId);
+    return this.repository.findById(userAccountId)
+            .map((UserAccount userAccount) -> {
+              this.repository.delete(userAccount);
+              return ExistingUserAccount.fromEntity(userAccount);
+            });
   }
 }

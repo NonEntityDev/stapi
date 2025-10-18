@@ -1,7 +1,7 @@
 package dev.nonentity.stapi.account.contract;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -13,8 +13,8 @@ public abstract class BaseUserAccount {
   String fullName;
 
   @NotNull
-  @Length(min = 3, max = 40)
-  @Pattern(regexp = "^[a-zA-Z.\\-_]*$")
+  @Length(min = 3, max = 140)
+  @Email
   String login;
 
 }

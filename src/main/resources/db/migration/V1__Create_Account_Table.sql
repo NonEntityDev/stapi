@@ -6,7 +6,7 @@ create table account (
     name VARCHAR(140) not null,
     alias VARCHAR(40) not null,
     secret VARCHAR(256) not null,
-    account_type VARCHAR(40) not null,
+    account_type VARCHAR(140) not null,
     enabled boolean not null,
     created_at timestamp not null,
     updated_at timestamp not null

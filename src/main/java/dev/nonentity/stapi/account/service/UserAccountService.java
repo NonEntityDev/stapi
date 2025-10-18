@@ -15,4 +15,6 @@ public interface UserAccountService {
 
   Set<ExistingUserAccount> findAll();
 
+  Optional<ExistingUserAccount> removeUserAccount(UUID userAccountId);
+
 }

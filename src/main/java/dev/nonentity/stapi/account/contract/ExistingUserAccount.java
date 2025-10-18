@@ -1,5 +1,6 @@
 package dev.nonentity.stapi.account.contract;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import dev.nonentity.stapi.account.domain.UserAccount;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,8 +16,10 @@ public class ExistingUserAccount extends BaseUserAccount {
 
   private Boolean enabled;
 
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime createdAt;
 
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime updatedAt;
 
   public static ExistingUserAccount fromEntity(UserAccount entity) {
