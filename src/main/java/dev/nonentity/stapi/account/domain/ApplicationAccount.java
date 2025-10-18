@@ -8,6 +8,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@DiscriminatorValue("userAccount")
-public class UserAccount extends Account {
+@DiscriminatorValue("applicationAccount")
+public class ApplicationAccount extends Account{
 }

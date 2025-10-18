@@ -7,7 +7,6 @@ import dev.nonentity.stapi.account.repository.UserAccountRepository;
 import dev.nonentity.stapi.common.RequestValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
