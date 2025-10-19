@@ -5,10 +5,15 @@ import dev.nonentity.stapi.account.contract.ExistingApplicationAccount;
 import dev.nonentity.stapi.account.contract.ExistingApplicationAccountCredentials;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface ApplicationAccountService {
   ExistingApplicationAccountCredentials createApplicationAccount(CreateApplicationAccount request);
 
   Optional<ExistingApplicationAccount> findById(UUID applicationId);
+
+  Set<ExistingApplicationAccount> findAll();
+
+  Optional<ExistingApplicationAccount> removeApplicationAccount(UUID applicationAccountId);
 }

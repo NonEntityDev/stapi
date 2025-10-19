@@ -1,5 +1,10 @@
 Feature: Managing application accounts.
 
+  Background:
+    * def applicationAccounts = call read("account/listAll-applicationAccount.feature")
+    * def ids = karate.map(applicationAccounts.response, function(entry) { return entry.clientId })
+    * karate.forEach(ids, function(id) { karate.call("account/remove-applicationAccount.feature", { clientId: id }); })
+
   @application_account @create
   Scenario: Create a new application account.
     Given request
@@ -65,3 +70,24 @@ Feature: Managing application accounts.
     Given path "/api/v1/application/b2c1d203-8cf5-409d-afcc-d7247921af90"
     When method get
     Then status 404
+
+  @application_account @list
+  Scenario: Retrieving all application accounts available
+    Given path "/api/v1/application"
+    And method get
+    Then status 200
+    And match response == []
+
+    * def appB = call read("account/create-applicationAccount.feature") { name: "Application B", alias: "application_b" }
+    * match appB.responseStatus == 200
+
+    * def appA = call read("account/create-applicationAccount.feature") { name: "Application A", alias: "application_a" }
+    * match appA.responseStatus == 200
+
+    Given path "/api/v1/application"
+    When method get
+    Then status 200
+    And match response[0].clientId == appA.response.clientId
+    And match response[0].clientSecret == "#notpresent"
+    And match response[1].clientId == appB.response.clientId
+    And match response[1].clientSecret == "#notpresent"

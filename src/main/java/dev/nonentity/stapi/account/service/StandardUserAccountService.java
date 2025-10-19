@@ -58,7 +58,7 @@ public class StandardUserAccountService implements UserAccountService {
 
   @Override
   public Set<ExistingUserAccount> findAll() {
-    log.info("Retrieving all existing user accounts");
+    log.info("Retrieving all existing user accounts.");
     return this.repository.findAll()
             .stream()
             .map(ExistingUserAccount::fromEntity)

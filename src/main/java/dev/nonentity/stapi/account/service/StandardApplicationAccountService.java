@@ -11,8 +11,12 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -57,6 +61,27 @@ public class StandardApplicationAccountService implements ApplicationAccountServ
     log.info("Retrieving application account by id.");
     log.debug("Requested application account id: {}", applicationId);
     return this.repository.findById(applicationId).map(ExistingApplicationAccount::fromEntity);
+  }
+
+  @Override
+  public Set<ExistingApplicationAccount> findAll() {
+    log.info("Retrieving all existing application accounts.");
+    return this.repository.findAll()
+            .stream()
+            .map(ExistingApplicationAccount::fromEntity)
+            .sorted(Comparator.comparing(ExistingApplicationAccount::getName))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+  }
+
+  @Override
+  public Optional<ExistingApplicationAccount> removeApplicationAccount(UUID applicationAccountId) {
+    log.info("Fetching and removing existing application account.");
+    log.debug("Id of application account to be removed: {}", applicationAccountId);
+    return this.repository.findById(applicationAccountId)
+            .map((ApplicationAccount applicationAccount) -> {
+              this.repository.delete(applicationAccount);
+              return ExistingApplicationAccount.fromEntity(applicationAccount);
+            });
   }
 
 }

@@ -93,7 +93,7 @@ Feature: Managing user accounts.
     # THEN the request is accepted
     Then status 200
     # AND the response is an empty list
-    * match response == []
+    And match response == []
 
     # GIVEN I create an user account with full name ending with B
     * def userB = call read("account/create-userAccount.feature") { fullName: "User B", login: "user.b@domain.com", password: "password" }
