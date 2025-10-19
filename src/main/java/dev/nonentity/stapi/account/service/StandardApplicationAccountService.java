@@ -1,6 +1,7 @@
 package dev.nonentity.stapi.account.service;
 
 import dev.nonentity.stapi.account.contract.CreateApplicationAccount;
+import dev.nonentity.stapi.account.contract.ExistingApplicationAccount;
 import dev.nonentity.stapi.account.contract.ExistingApplicationAccountCredentials;
 import dev.nonentity.stapi.account.domain.ApplicationAccount;
 import dev.nonentity.stapi.account.repository.ApplicationAccountRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -48,6 +50,13 @@ public class StandardApplicationAccountService implements ApplicationAccountServ
     byte[] rawSecret = new byte[48];
     this.secureRandom.nextBytes(rawSecret);
     return Base64.getUrlEncoder().withoutPadding().encodeToString(rawSecret);
+  }
+
+  @Override
+  public Optional<ExistingApplicationAccount> findById(UUID applicationId) {
+    log.info("Retrieving application account by id.");
+    log.debug("Requested application account id: {}", applicationId);
+    return this.repository.findById(applicationId).map(ExistingApplicationAccount::fromEntity);
   }
 
 }

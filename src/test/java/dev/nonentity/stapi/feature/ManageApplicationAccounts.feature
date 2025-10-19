@@ -41,3 +41,27 @@ Feature: Managing application accounts.
     Then status 400
     * match response["type"] == "CreateApplicationAccount"
     * match karate.jsonPath(response, "$.violations[?(@.field=='alias')].messages") == [["already exists"]]
+
+  @application_account @retrieve
+  Scenario: Retrieving application account by id.
+    * def appAccount = call read("account/create-applicationAccount.feature") { name: "LinkedIN Watcher", alias: "linkedin_watcher" }
+    * match appAccount.responseStatus == 200
+    Given path "/api/v1/application/" + appAccount.response.clientId
+    When method get
+    Then status 200
+    And match response ==
+    """
+    {
+      clientId: #(appAccount.response.clientId),
+      name: #(appAccount.response.name),
+      alias: #(appAccount.response.alias),
+      enabled: #(appAccount.response.enabled),
+      clientSecret: '#notpresent',
+      createdAt: '#present',
+      updatedAt: '#present'
+    }
+    """
+
+    Given path "/api/v1/application/b2c1d203-8cf5-409d-afcc-d7247921af90"
+    When method get
+    Then status 404

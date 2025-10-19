@@ -51,7 +51,7 @@ public class StandardUserAccountService implements UserAccountService {
   @Override
   public Optional<ExistingUserAccount> findById(UUID userAccountId) {
     log.info("Retrieving user account by id.");
-    log.debug("Received user account id: {}", userAccountId);
+    log.debug("Requested user account id: {}", userAccountId);
     return this.repository.findById(userAccountId)
             .map(ExistingUserAccount::fromEntity);
   }
