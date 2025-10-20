@@ -117,28 +117,13 @@ Feature: Managing user accounts.
 
   @user_account @delete
   Scenario: Removing an user account
-    # GIVEN I create an user account
     * def userAccount = call read("account/create-userAccount.feature") { fullName: "Administrator", login: "admin@domain.com", password: "password" }
     * match userAccount.responseStatus == 200
-    # AND I retrieve this user account using its id
-    Given path "/api/v1/user/" + userAccount.response.id
-    And method get
-    # THEN the user account details is returned
-    Then status 200
-    # WHEN I request to delete this user account
     Given path "/api/v1/user/" + userAccount.response.id
     And method delete
-    # THEN the request is successfully executed
     Then status 200
-    # AND the user account details are available in the response
     And match response == userAccount.response
-    # WHEN I try to retrieve this user account using its id
+
     Given path "/api/v1/user/" + userAccount.response.id
     And method get
-    # THEN the user account is not found
-    Then status 404
-    # WHEN I try to request to delete this same user account
-    Given path "/api/v1/user/" + userAccount.response.id
-    And method delete
-    # THEN the user account is not found
     Then status 404

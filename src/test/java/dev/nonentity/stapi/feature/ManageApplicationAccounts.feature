@@ -91,3 +91,16 @@ Feature: Managing application accounts.
     And match response[0].clientSecret == "#notpresent"
     And match response[1].clientId == appB.response.clientId
     And match response[1].clientSecret == "#notpresent"
+
+  @application_account @delete
+  Scenario: Removing an application account
+    * def app = call read("account/create-applicationAccount.feature") { name: "Application B", alias: "application_b" }
+    * match app.responseStatus == 200
+    Given path "/api/v1/application/" + app.response.clientId
+    And method delete
+    Then status 200
+    And match response.clientId == app.response.clientId
+
+    Given path "/api/v1/application/" + app.response.clientId
+    And method delete
+    Then status 404
