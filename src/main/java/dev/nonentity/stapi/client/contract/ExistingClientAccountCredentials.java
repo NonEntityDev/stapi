@@ -4,8 +4,6 @@ import dev.nonentity.stapi.client.domain.ClientAccount;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Set;
 
 @Data
@@ -18,14 +16,10 @@ public class ExistingClientAccountCredentials extends ExistingClientAccount {
 
   public ExistingClientAccountCredentials(ClientAccount entity) {
     super(entity);
-
     this.setScopes(
             Set.of(entity.getScopes().split(";"))
     );
-
-    byte[] rawClientSecret = entity.getSecretHash().getBytes(StandardCharsets.UTF_8);
-    String encodedClientSecret = Base64.getUrlEncoder().withoutPadding().encodeToString(rawClientSecret);
-    this.setClientSecret(encodedClientSecret);
+    this.setClientSecret(entity.getSecretHash());
   }
 
 }

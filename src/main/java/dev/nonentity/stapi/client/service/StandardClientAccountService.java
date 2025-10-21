@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -31,7 +32,7 @@ public class StandardClientAccountService implements ClientAccountService {
   }
 
   @Override
-  public ExistingClientAccountCredentials create(CreateClientAccount request) {
+  public ExistingClientAccount create(CreateClientAccount request) {
     log.info("Creating a new client account.");
 
     Optional<ClientAccount> existingClientAccount = this.clientAccountRepository.findByAlias(request.getAlias());
@@ -43,7 +44,7 @@ public class StandardClientAccountService implements ClientAccountService {
     ClientAccount newClientAccount = request.toEntity();
     newClientAccount.setSecretHash(secretHash);
 
-    return new ExistingClientAccountCredentials(
+    return new ExistingClientAccount(
             this.clientAccountRepository.save(newClientAccount)
     );
 
@@ -90,16 +91,23 @@ public class StandardClientAccountService implements ClientAccountService {
   }
 
   @Override
-  public Optional<ExistingClientAccountCredentials> updateCredentials(UUID clientId, UpdateClientAccountCredentials request) {
+  public Optional<ExistingClientAccount> updateCredentials(UUID clientId, UpdateClientAccountCredentials request) {
     log.info("Updating existing client account credentials.");
     return this.clientAccountRepository.findById(clientId)
             .map((ClientAccount entity) -> {
               request.mergeWith(entity);
               entity.setSecretHash(this.passwordEncoder.encode(request.getSecret()));
-              return new ExistingClientAccountCredentials(
+              return new ExistingClientAccount(
                       this.clientAccountRepository.save(entity)
               );
             });
+  }
+
+  @Override
+  public Optional<ExistingClientAccountCredentials> findByIdWithCredentials(UUID clientId) {
+    log.info("Retrieving client account by id, including its credentials.");
+    return this.clientAccountRepository.findById(clientId)
+            .map(ExistingClientAccountCredentials::new);
   }
 
 }

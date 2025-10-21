@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface ClientAccountService {
-  ExistingClientAccountCredentials create(CreateClientAccount request);
+  ExistingClientAccount create(CreateClientAccount request);
 
   Set<ExistingClientAccount> loadAll();
 
@@ -19,5 +19,7 @@ public interface ClientAccountService {
 
   Optional<ExistingClientAccount> update(UUID clientId, UpdateClientAccount request);
 
-  Optional<ExistingClientAccountCredentials> updateCredentials(UUID clientId, UpdateClientAccountCredentials request);
+  Optional<ExistingClientAccount> updateCredentials(UUID clientId, UpdateClientAccountCredentials request);
+
+  Optional<ExistingClientAccountCredentials> findByIdWithCredentials(UUID clientId);
 }

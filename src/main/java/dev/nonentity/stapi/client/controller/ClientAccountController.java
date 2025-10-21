@@ -37,7 +37,7 @@ public class ClientAccountController {
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ExistingClientAccountCredentials> create(@Valid @RequestBody CreateClientAccount request) {
+  public ResponseEntity<ExistingClientAccount> create(@Valid @RequestBody CreateClientAccount request) {
     log.info("Processing request to create a new client account.");
     return ResponseEntity.ok(
             this.clientAccountService.create(request)
@@ -72,7 +72,7 @@ public class ClientAccountController {
   @PutMapping(value = "/{id}/credentials", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> updateCredentials(@PathVariable("id") UUID clientId, @Valid @RequestBody UpdateClientAccountCredentials request) {
     log.info("Processing request to update client account credentials.");
-    Optional<ExistingClientAccountCredentials> updatedClientAccount = this.clientAccountService.updateCredentials(clientId, request);
+    Optional<ExistingClientAccount> updatedClientAccount = this.clientAccountService.updateCredentials(clientId, request);
     if (updatedClientAccount.isPresent()) {
       return ResponseEntity.ok(updatedClientAccount.get());
 
