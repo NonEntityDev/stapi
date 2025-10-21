@@ -1,18 +1,27 @@
 package dev.nonentity.stapi.account.auth;
 
-import dev.nonentity.stapi.account.domain.ApplicationAccount;
-import dev.nonentity.stapi.account.repository.ApplicationAccountRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
 
 @Service
 public class ApplicationAccountDetailsService implements RegisteredClientRepository {
+  @Override
+  public void save(RegisteredClient registeredClient) {
 
+  }
+
+  @Override
+  public RegisteredClient findById(String id) {
+    return null;
+  }
+
+  @Override
+  public RegisteredClient findByClientId(String clientId) {
+    return null;
+  }
+  /*
   private final ApplicationAccountRepository applicationAccountRepository;
 
   public ApplicationAccountDetailsService(ApplicationAccountRepository applicationAccountRepository) {
@@ -46,5 +55,5 @@ public class ApplicationAccountDetailsService implements RegisteredClientReposit
             .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
             .build();
   }
-
+  */
 }

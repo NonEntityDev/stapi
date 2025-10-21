@@ -10,4 +10,6 @@ public interface ClientAccountRepository extends JpaRepository<ClientAccount, UU
 
   Optional<ClientAccount> findByAlias(String alias);
 
+  Optional<ClientAccount> findByAliasAndClientIdNot(String alias, UUID clientId);
+
 }

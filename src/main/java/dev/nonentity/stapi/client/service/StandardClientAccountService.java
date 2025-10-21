@@ -3,6 +3,7 @@ package dev.nonentity.stapi.client.service;
 import dev.nonentity.stapi.client.contract.CreateClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccountCredentials;
+import dev.nonentity.stapi.client.contract.UpdateClientAccount;
 import dev.nonentity.stapi.client.domain.ClientAccount;
 import dev.nonentity.stapi.common.RequestValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +65,26 @@ public class StandardClientAccountService implements ClientAccountService {
             .map((ClientAccount entity) -> {
               this.clientAccountRepository.delete(entity);
               return new ExistingClientAccount(entity);
+            });
+  }
+
+  @Override
+  public Optional<ExistingClientAccount> update(UUID clientId, UpdateClientAccount request) {
+    log.info("Updating existing client account.");
+
+    Optional<ClientAccount> duplicatedClientAccount = this.clientAccountRepository.findByAliasAndClientIdNot(
+            request.getAlias(), clientId
+    );
+    if (duplicatedClientAccount.isPresent()) {
+      throw new RequestValidationException(request.getClass().getSimpleName(), "alias", "already exists");
+    }
+
+    return this.clientAccountRepository.findById(clientId)
+            .map((ClientAccount entity) -> {
+              request.mergeWith(entity);
+              return new ExistingClientAccount(
+                      this.clientAccountRepository.save(entity)
+              );
             });
   }
 

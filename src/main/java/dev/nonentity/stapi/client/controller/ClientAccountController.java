@@ -3,6 +3,7 @@ package dev.nonentity.stapi.client.controller;
 import dev.nonentity.stapi.client.contract.CreateClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccountCredentials;
+import dev.nonentity.stapi.client.contract.UpdateClientAccount;
 import dev.nonentity.stapi.client.service.ClientAccountService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +49,23 @@ public class ClientAccountController {
     return ResponseEntity.ok(
             this.clientAccountService.loadAll()
     );
+  }
+
+  @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> update(@PathVariable("id") UUID clientId, @Valid @RequestBody UpdateClientAccount request) {
+    log.info("Processing request to update client account details.");
+    Optional<ExistingClientAccount> updateClientAccount = this.clientAccountService.update(clientId, request);
+    if (updateClientAccount.isPresent()) {
+      return ResponseEntity.ok(updateClientAccount.get());
+
+    } else {
+      return ResponseEntity
+              .status(HttpStatus.NOT_FOUND)
+              .body(Map.of(
+                      "message", "Client account not found."
+              ));
+
+    }
   }
 
   @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -101,3 +101,74 @@ Feature: Managing client accounts.
     When method delete
     Then status 404
     And match response.message == "Client account not found."
+
+  @client_account @update
+  Scenario: Updating existing client account.
+    * def client = call read("client/create-clientAccount.feature") { title: "Test Client", description: "Client created during the tests.", alias: "TEST_UPDATE", clientSecret: "password", scope: "MANAGE_CLIENTS" }
+    * match client.responseStatus == 200
+
+    Given request
+      """
+      {
+        "title": "Updated Test Client",
+        "description": "Client updated during tests.",
+        "alias": "",
+        "scopes": ["UPDATE"]
+      }
+      """
+    And path "/api/v1/clients/" + client.response.clientId
+    When method put
+    Then status 400
+    And match response.type == "UpdateClientAccount"
+    * match karate.jsonPath(response, "$.violations[?(@.field=='alias')].messages") == [["length must be between 3 and 40"]]
+
+    Given request
+      """
+      {
+        "title": "Updated Test Client",
+        "description": "Client updated during tests.",
+        "alias": "TEST_UPDATED",
+        "scopes": ["UPDATE"]
+      }
+      """
+    And path "/api/v1/clients/" + client.response.clientId
+    When method put
+    Then status 200
+    And match response.clientId == client.response.clientId
+    And match response.title == "Updated Test Client"
+    And match response.description == "Client updated during tests."
+    And match response.alias == "TEST_UPDATED"
+    And match response.scopes contains only ["UPDATE"]
+    And match response contains { clientSecret: "#notpresent", createdAt: "#present", updatedAt: "#present" }
+
+    * def anotherClient = call read("client/create-clientAccount.feature") { title: "Test Client", description: "Client created during the tests.", alias: "UPDATE", clientSecret: "password", scope: "MANAGE_CLIENTS" }
+    * match anotherClient.responseStatus == 200
+
+    Given request
+      """
+      {
+        "title": "Updated Test Client",
+        "description": "Client updated during tests.",
+        "alias": "UPDATE",
+        "scopes": ["UPDATE"]
+      }
+      """
+    And path "/api/v1/clients/" + client.response.clientId
+    When method put
+    Then status 400
+    And match response.type == "UpdateClientAccount"
+    * match karate.jsonPath(response, "$.violations[?(@.field=='alias')].messages") == [["already exists"]]
+
+    Given request
+      """
+      {
+        "title": "Updated Test Client",
+        "description": "Client updated during tests.",
+        "alias": "NOT_FOUND",
+        "scopes": ["UPDATE"]
+      }
+      """
+    And path "/api/v1/clients/0e12e4ed-c3df-47c1-bf66-155fa00d3f8d"
+    When method put
+    Then status 404
+    And match response.message == "Client account not found."
