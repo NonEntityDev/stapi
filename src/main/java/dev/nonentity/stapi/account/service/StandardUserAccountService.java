@@ -76,4 +76,5 @@ public class StandardUserAccountService implements UserAccountService {
               return ExistingUserAccount.fromEntity(userAccount);
             });
   }
+
 }
