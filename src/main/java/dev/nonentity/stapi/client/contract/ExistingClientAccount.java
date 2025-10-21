@@ -2,6 +2,7 @@ package dev.nonentity.stapi.client.contract;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import dev.nonentity.stapi.client.domain.ClientAccount;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,9 @@ public class ExistingClientAccount extends BasicClientAccount {
 
   private UUID clientId;
 
+  @NotEmpty
+  private Set<String> scopes;
+
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime createdAt;
 
@@ -28,6 +32,7 @@ public class ExistingClientAccount extends BasicClientAccount {
     this.setTitle(entity.getTitle());
     this.setDescription(entity.getDescription());
     this.setAlias(entity.getAlias());
+    this.setScopes(Set.of(entity.getScopes().split(";")));
     this.setCreatedAt(entity.getCreatedAt());
     this.setUpdatedAt(entity.getUpdatedAt());
   }

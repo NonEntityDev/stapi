@@ -16,9 +16,6 @@ public class ExistingClientAccountCredentials extends ExistingClientAccount {
 
   public ExistingClientAccountCredentials(ClientAccount entity) {
     super(entity);
-    this.setScopes(
-            Set.of(entity.getScopes().split(";"))
-    );
     this.setClientSecret(entity.getSecretHash());
   }
 

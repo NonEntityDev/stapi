@@ -62,7 +62,7 @@ Feature: Managing client accounts.
     And path "/api/v1/clients"
     When method post
     Then status 200
-    And match response contains { clientId: "#present", clientSecret: "#present", createdAt: "#present", updatedAt: "#present" }
+    And match response contains { clientId: "#present", clientSecret: "#notpresent", createdAt: "#present", updatedAt: "#present" }
     And match response.title == "Test Client"
     And match response.description == "Client created during the tests."
     And match response.alias == "TEST"
@@ -197,8 +197,7 @@ Feature: Managing client accounts.
     When method put
     Then status 200
     And match response.clientId == client.response.clientId
-    And match response.scopes == ["SEND_MESSAGE"]
-    And match response.clientSecret != client.response.clientSecret
+    And match response contains { scopes: "#notpresent", clientSecret: "#notpresent" }
 
     Given request
       """

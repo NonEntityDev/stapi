@@ -32,6 +32,7 @@ public class RegisteredClientAccountRepository implements RegisteredClientReposi
 
   @Override
   public RegisteredClient findByClientId(String clientId) {
+    log.info("Authenticating client account.");
     ExistingClientAccountCredentials clientAccount = this.clientAccountService.findByIdWithCredentials(
             UUID.fromString(clientId)
     ).orElseThrow(() -> new IllegalArgumentException("Client id not found."));
