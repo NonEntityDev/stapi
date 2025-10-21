@@ -1,6 +1,7 @@
 package dev.nonentity.stapi.client.service;
 
 import dev.nonentity.stapi.client.contract.CreateClientAccount;
+import dev.nonentity.stapi.client.contract.ExistingClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccountCredentials;
 import dev.nonentity.stapi.client.domain.ClientAccount;
 import dev.nonentity.stapi.common.RequestValidationException;
@@ -8,7 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -39,6 +45,26 @@ public class StandardClientAccountService implements ClientAccountService {
             this.clientAccountRepository.save(newClientAccount)
     );
 
+  }
+
+  @Override
+  public Set<ExistingClientAccount> loadAll() {
+    log.info("Retrieving all client accounts available.");
+    return this.clientAccountRepository.findAll()
+            .stream()
+            .map(ExistingClientAccount::new)
+            .sorted(Comparator.comparing(ExistingClientAccount::getAlias))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+  }
+
+  @Override
+  public Optional<ExistingClientAccount> remove(UUID clientId) {
+    log.info("Removing existing client account.");
+    return this.clientAccountRepository.findById(clientId)
+            .map((ClientAccount entity) -> {
+              this.clientAccountRepository.delete(entity);
+              return new ExistingClientAccount(entity);
+            });
   }
 
 }
