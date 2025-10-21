@@ -4,6 +4,7 @@ import dev.nonentity.stapi.client.contract.CreateClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccountCredentials;
 import dev.nonentity.stapi.client.contract.UpdateClientAccount;
+import dev.nonentity.stapi.client.contract.UpdateClientAccountCredentials;
 import dev.nonentity.stapi.client.service.ClientAccountService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -51,12 +52,29 @@ public class ClientAccountController {
     );
   }
 
-  @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> update(@PathVariable("id") UUID clientId, @Valid @RequestBody UpdateClientAccount request) {
     log.info("Processing request to update client account details.");
     Optional<ExistingClientAccount> updateClientAccount = this.clientAccountService.update(clientId, request);
     if (updateClientAccount.isPresent()) {
       return ResponseEntity.ok(updateClientAccount.get());
+
+    } else {
+      return ResponseEntity
+              .status(HttpStatus.NOT_FOUND)
+              .body(Map.of(
+                      "message", "Client account not found."
+              ));
+
+    }
+  }
+
+  @PutMapping(value = "/{id}/credentials", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> updateCredentials(@PathVariable("id") UUID clientId, @Valid @RequestBody UpdateClientAccountCredentials request) {
+    log.info("Processing request to update client account credentials.");
+    Optional<ExistingClientAccountCredentials> updatedClientAccount = this.clientAccountService.updateCredentials(clientId, request);
+    if (updatedClientAccount.isPresent()) {
+      return ResponseEntity.ok(updatedClientAccount.get());
 
     } else {
       return ResponseEntity

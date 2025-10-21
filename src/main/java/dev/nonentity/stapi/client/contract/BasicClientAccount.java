@@ -22,7 +22,5 @@ public abstract class BasicClientAccount {
   @Length(min = 3, max = 40)
   private String alias;
 
-  @NotEmpty
-  private Set<String> scopes;
 
 }

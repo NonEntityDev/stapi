@@ -14,7 +14,6 @@ public class UpdateClientAccount extends BasicClientAccount {
     entity.setTitle(this.getTitle());
     entity.setDescription(this.getDescription());
     entity.setAlias(this.getAlias());
-    entity.setScopes(String.join(";", this.getScopes()));
     entity.setUpdatedAt(LocalDateTime.now());
   }
 

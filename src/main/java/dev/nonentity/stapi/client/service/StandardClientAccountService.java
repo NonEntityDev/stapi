@@ -4,6 +4,7 @@ import dev.nonentity.stapi.client.contract.CreateClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccountCredentials;
 import dev.nonentity.stapi.client.contract.UpdateClientAccount;
+import dev.nonentity.stapi.client.contract.UpdateClientAccountCredentials;
 import dev.nonentity.stapi.client.domain.ClientAccount;
 import dev.nonentity.stapi.common.RequestValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -83,6 +84,19 @@ public class StandardClientAccountService implements ClientAccountService {
             .map((ClientAccount entity) -> {
               request.mergeWith(entity);
               return new ExistingClientAccount(
+                      this.clientAccountRepository.save(entity)
+              );
+            });
+  }
+
+  @Override
+  public Optional<ExistingClientAccountCredentials> updateCredentials(UUID clientId, UpdateClientAccountCredentials request) {
+    log.info("Updating existing client account credentials.");
+    return this.clientAccountRepository.findById(clientId)
+            .map((ClientAccount entity) -> {
+              request.mergeWith(entity);
+              entity.setSecretHash(this.passwordEncoder.encode(request.getSecret()));
+              return new ExistingClientAccountCredentials(
                       this.clientAccountRepository.save(entity)
               );
             });

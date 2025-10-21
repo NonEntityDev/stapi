@@ -112,8 +112,7 @@ Feature: Managing client accounts.
       {
         "title": "Updated Test Client",
         "description": "Client updated during tests.",
-        "alias": "",
-        "scopes": ["UPDATE"]
+        "alias": ""
       }
       """
     And path "/api/v1/clients/" + client.response.clientId
@@ -127,8 +126,7 @@ Feature: Managing client accounts.
       {
         "title": "Updated Test Client",
         "description": "Client updated during tests.",
-        "alias": "TEST_UPDATED",
-        "scopes": ["UPDATE"]
+        "alias": "TEST_UPDATED"
       }
       """
     And path "/api/v1/clients/" + client.response.clientId
@@ -138,7 +136,6 @@ Feature: Managing client accounts.
     And match response.title == "Updated Test Client"
     And match response.description == "Client updated during tests."
     And match response.alias == "TEST_UPDATED"
-    And match response.scopes contains only ["UPDATE"]
     And match response contains { clientSecret: "#notpresent", createdAt: "#present", updatedAt: "#present" }
 
     * def anotherClient = call read("client/create-clientAccount.feature") { title: "Test Client", description: "Client created during the tests.", alias: "UPDATE", clientSecret: "password", scope: "MANAGE_CLIENTS" }
@@ -149,8 +146,7 @@ Feature: Managing client accounts.
       {
         "title": "Updated Test Client",
         "description": "Client updated during tests.",
-        "alias": "UPDATE",
-        "scopes": ["UPDATE"]
+        "alias": "UPDATE"
       }
       """
     And path "/api/v1/clients/" + client.response.clientId
@@ -164,11 +160,54 @@ Feature: Managing client accounts.
       {
         "title": "Updated Test Client",
         "description": "Client updated during tests.",
-        "alias": "NOT_FOUND",
-        "scopes": ["UPDATE"]
+        "alias": "NOT_FOUND"
       }
       """
     And path "/api/v1/clients/0e12e4ed-c3df-47c1-bf66-155fa00d3f8d"
+    When method put
+    Then status 404
+    And match response.message == "Client account not found."
+
+  @client_account @update_credentials
+  Scenario: Updating client account credentials.
+    * def client = call read("client/create-clientAccount.feature") { title: "Test Client", description: "Client created during the tests.", alias: "TEST", clientSecret: "password", scope: "MANAGE_CLIENTS" }
+    * match client.responseStatus == 200
+
+    Given request
+      """
+      {
+        "scopes": [],
+        "secret": "password"
+      }
+      """
+    And path "/api/v1/clients/" + client.response.clientId + "/credentials"
+    When method put
+    Then status 400
+    And match response.type == "UpdateClientAccountCredentials"
+    * match karate.jsonPath(response, "$.violations[?(@.field=='scopes')].messages") == [["must not be empty"]]
+
+    Given request
+      """
+      {
+        "scopes": ["SEND_MESSAGE"],
+        "secret": "updatedPassword"
+      }
+      """
+    And path "/api/v1/clients/" + client.response.clientId + "/credentials"
+    When method put
+    Then status 200
+    And match response.clientId == client.response.clientId
+    And match response.scopes == ["SEND_MESSAGE"]
+    And match response.clientSecret != client.response.clientSecret
+
+    Given request
+      """
+      {
+        "scopes": ["SEND_MESSAGE"],
+        "secret": "updatedPassword"
+      }
+      """
+    And path "/api/v1/clients/0e12e4ed-c3df-47c1-bf66-155fa00d3f8d/credentials"
     When method put
     Then status 404
     And match response.message == "Client account not found."

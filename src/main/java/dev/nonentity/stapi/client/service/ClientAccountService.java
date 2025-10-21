@@ -4,6 +4,7 @@ import dev.nonentity.stapi.client.contract.CreateClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccountCredentials;
 import dev.nonentity.stapi.client.contract.UpdateClientAccount;
+import dev.nonentity.stapi.client.contract.UpdateClientAccountCredentials;
 
 import java.util.Optional;
 import java.util.Set;
@@ -17,4 +18,6 @@ public interface ClientAccountService {
   Optional<ExistingClientAccount> remove(UUID clientId);
 
   Optional<ExistingClientAccount> update(UUID clientId, UpdateClientAccount request);
+
+  Optional<ExistingClientAccountCredentials> updateCredentials(UUID clientId, UpdateClientAccountCredentials request);
 }

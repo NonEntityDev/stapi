@@ -28,7 +28,6 @@ public class ExistingClientAccount extends BasicClientAccount {
     this.setTitle(entity.getTitle());
     this.setDescription(entity.getDescription());
     this.setAlias(entity.getAlias());
-    this.setScopes(Set.of(entity.getScopes().split(";")));
     this.setCreatedAt(entity.getCreatedAt());
     this.setUpdatedAt(entity.getUpdatedAt());
   }
