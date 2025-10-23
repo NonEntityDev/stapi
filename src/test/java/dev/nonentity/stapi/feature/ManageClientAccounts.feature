@@ -83,6 +83,29 @@ Feature: Managing client accounts.
           "SEND_MESSAGE"
         ],
         parameters: [
+          { "name": "TEMPLATE", "value": "Insert mustache template here." },
+          { "name": "TEMPLATE", "value": "Another parameter to insert mustache template." }
+        ]
+      }
+      """
+    And path "/api/v1/clients"
+    When method post
+    Then status 400
+    And match response.type == "CreateClientAccount"
+    * match karate.jsonPath(response, "$.violations[?(@.field=='parameters')].messages") == [["duplicated parameters: TEMPLATE"]]
+
+    Given request
+      """
+      {
+        title: "Test Client",
+        description: "Client created during the tests.",
+        alias: "TEST",
+        clientSecret: "password",
+        scopes: [
+          "CLIENT_MANAGEMENT",
+          "SEND_MESSAGE"
+        ],
+        parameters: [
           { "name": "TEMPLATE", "value": "Insert mustache template here." }
         ]
       }
@@ -176,6 +199,24 @@ Feature: Managing client accounts.
     Then status 400
     And match response.type == "UpdateClientAccount"
     * match karate.jsonPath(response, "$.violations[?(@.field=='alias')].messages") == [["length must be between 3 and 40"]]
+
+    Given request
+      """
+      {
+        title: "Updated Test Client",
+        description: "Client updated during tests.",
+        alias: "TEST_UPDATED",
+        parameters: [
+          { name: "TEMPLATE", value: "Insert Mustache template here." },
+          { name: "TEMPLATE", value: "Another template parameter." }
+        ]
+      }
+      """
+    And path "/api/v1/clients/" + client.response.clientId
+    When method put
+    Then status 400
+    And match response.type == "UpdateClientAccount"
+    * match karate.jsonPath(response, "$.violations[?(@.field=='parameters')].messages") == [["duplicated parameters: TEMPLATE"]]
 
     Given request
       """

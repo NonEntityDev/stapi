@@ -2,6 +2,7 @@ package dev.nonentity.stapi.client.contract;
 
 import dev.nonentity.stapi.client.domain.ClientAccount;
 import dev.nonentity.stapi.client.domain.ClientParameter;
+import dev.nonentity.stapi.client.contract.validation.UniqueClientParameters;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,7 @@ import java.util.Set;
 public class UpdateClientAccount extends BasicClientAccount {
 
   @NotEmpty
+  @UniqueClientParameters
   private Set<CreateClientParameter> parameters;
 
   public void mergeWith(ClientAccount entity) {

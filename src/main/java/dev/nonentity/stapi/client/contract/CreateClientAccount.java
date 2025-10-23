@@ -2,6 +2,7 @@ package dev.nonentity.stapi.client.contract;
 
 import dev.nonentity.stapi.client.domain.ClientAccount;
 import dev.nonentity.stapi.client.domain.ClientParameter;
+import dev.nonentity.stapi.client.contract.validation.UniqueClientParameters;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class CreateClientAccount extends BasicClientAccount {
   private Set<String> scopes;
 
   @NotEmpty
+  @UniqueClientParameters
   private Set<CreateClientParameter> parameters;
 
   @NotBlank
