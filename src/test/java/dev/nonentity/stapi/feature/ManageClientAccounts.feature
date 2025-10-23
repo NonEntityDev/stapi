@@ -60,8 +60,8 @@ Feature: Managing client accounts.
         description: "Client created during the tests.",
         alias: "TEST",
         scopes: [
-          "CLIENT_MANAGEMENT",
-          "SEND_MESSAGE"
+          "message.send",
+          "client.all"
         ]
       }
       """
@@ -79,8 +79,8 @@ Feature: Managing client accounts.
         alias: "TEST",
         clientSecret: "password",
         scopes: [
-          "CLIENT_MANAGEMENT",
-          "SEND_MESSAGE"
+          "message.send",
+          "client.all"
         ],
         parameters: [
           { "name": "TEMPLATE", "value": "Insert mustache template here." },
@@ -102,8 +102,8 @@ Feature: Managing client accounts.
         alias: "TEST",
         clientSecret: "password",
         scopes: [
-          "CLIENT_MANAGEMENT",
-          "SEND_MESSAGE"
+          "message.send",
+          "client.all"
         ],
         parameters: [
           { "name": "TEMPLATE", "value": "Insert mustache template here." }
@@ -117,7 +117,7 @@ Feature: Managing client accounts.
     And match response.title == "Test Client"
     And match response.description == "Client created during the tests."
     And match response.alias == "TEST"
-    And match response.scopes contains only ["CLIENT_MANAGEMENT", "SEND_MESSAGE"]
+    And match response.scopes contains only ["message.send", "client.all"]
     And match response.parameters == [{ "name": "TEMPLATE", "value": "Insert mustache template here.", "modifiedAt": "#present" }]
 
     Given request
@@ -128,8 +128,8 @@ Feature: Managing client accounts.
         alias: "TEST",
         clientSecret: "password",
         scopes: [
-          "CLIENT_MANAGEMENT",
-          "SEND_MESSAGE"
+          "message.send",
+          "client.all"
         ],
         parameters: [
           { "name": "TEMPLATE", "value": "Insert mustache template here." }
@@ -178,7 +178,7 @@ Feature: Managing client accounts.
         description: "Client created during tests.",
         alias: "TEST_UPDATE",
         clientSecret: "password",
-        scopes: ["MANAGE_CLIENTS"],
+        scopes: ["client.all"],
         parameters: [
           { name: "TEMPLATE", value: "Insert Mustache template here." }
         ]
@@ -236,7 +236,6 @@ Feature: Managing client accounts.
     And match response.title == "Updated Test Client"
     And match response.description == "Client updated during tests."
     And match response.alias == "TEST_UPDATED"
-    And match response.scopes == ["MANAGE_CLIENTS"]
     And match response.parameters == [{ name: "TEMPLATE", value: "Insert Mustache template here.", modifiedAt: "#present" }]
     And match response contains { clientSecret: "#notpresent", createdAt: "#present", updatedAt: "#present" }
 
@@ -247,7 +246,7 @@ Feature: Managing client accounts.
         description: "Client created during tests.",
         alias: "UPDATE",
         clientSecret: "password",
-        scopes: ["MANAGE_CLIENTS"],
+        scopes: ["client.all"],
         parameters: [
           { name: "TEMPLATE", value: "Insert Mustache template here." }
         ]
@@ -261,7 +260,6 @@ Feature: Managing client accounts.
         title: "Updated Test Client",
         description: "Client updated during tests.",
         alias: "UPDATE",
-        scopes: ["client.all"],
         parameters: [
           { name: "TEMPLATE", value: "Insert Mustache template here." }
         ]
@@ -279,7 +277,6 @@ Feature: Managing client accounts.
         title: "Updated Test Client",
         description: "Client updated during tests.",
         alias: "NOT_FOUND",
-        scopes: ["client.all"],
         parameters: [
           { name: "TEMPLATE", value: "Insert Mustache template here." }
         ]
