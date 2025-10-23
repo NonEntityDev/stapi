@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +19,8 @@ public class ExistingClientAccount extends BasicClientAccount {
 
   private UUID clientId;
 
-  @NotEmpty
+  private Set<ExistingClientParameter> parameters;
+
   private Set<String> scopes;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -33,6 +35,12 @@ public class ExistingClientAccount extends BasicClientAccount {
     this.setDescription(entity.getDescription());
     this.setAlias(entity.getAlias());
     this.setScopes(Set.of(entity.getScopes().split(";")));
+    this.setParameters(
+            entity.getParameters()
+                    .stream()
+                    .map(ExistingClientParameter::new)
+                    .collect(Collectors.toSet())
+    );
     this.setCreatedAt(entity.getCreatedAt());
     this.setUpdatedAt(entity.getUpdatedAt());
   }

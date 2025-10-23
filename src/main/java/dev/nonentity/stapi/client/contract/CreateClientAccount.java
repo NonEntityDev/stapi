@@ -1,6 +1,7 @@
 package dev.nonentity.stapi.client.contract;
 
 import dev.nonentity.stapi.client.domain.ClientAccount;
+import dev.nonentity.stapi.client.domain.ClientParameter;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Set;
 
 @Data
@@ -16,6 +18,9 @@ public class CreateClientAccount extends BasicClientAccount {
 
   @NotEmpty
   private Set<String> scopes;
+
+  @NotEmpty
+  private Set<CreateClientParameter> parameters;
 
   @NotBlank
   @Length(min = 8, max = 40)
@@ -27,7 +32,14 @@ public class CreateClientAccount extends BasicClientAccount {
     entity.setDescription(this.getDescription());
     entity.setAlias(this.getAlias());
     entity.setScopes(String.join(";", this.getScopes()));
-    entity.setSystemAccount(false);
+
+    entity.setParameters(
+            this.getParameters()
+                    .stream()
+                    .map(CreateClientParameter::toEntity)
+                    .peek((ClientParameter parameter) -> parameter.setClientAccount(entity))
+                    .toList()
+    );
 
     LocalDateTime now = LocalDateTime.now();
     entity.setCreatedAt(now);

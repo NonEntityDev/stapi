@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -40,8 +39,8 @@ public class StandardClientAccountService implements ClientAccountService {
       throw new RequestValidationException(request.getClass().getSimpleName(), "alias", "already exists");
     }
 
-    String secretHash = this.passwordEncoder.encode(request.getClientSecret());
     ClientAccount newClientAccount = request.toEntity();
+    String secretHash = this.passwordEncoder.encode(request.getClientSecret());
     newClientAccount.setSecretHash(secretHash);
 
     return new ExistingClientAccount(
@@ -83,6 +82,9 @@ public class StandardClientAccountService implements ClientAccountService {
 
     return this.clientAccountRepository.findById(clientId)
             .map((ClientAccount entity) -> {
+              entity.getParameters().clear();
+              this.clientAccountRepository.save(entity);
+
               request.mergeWith(entity);
               return new ExistingClientAccount(
                       this.clientAccountRepository.save(entity)

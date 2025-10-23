@@ -8,7 +8,6 @@ create table client_account (
     alias VARCHAR(40) not null,
     secret_hash VARCHAR(140) not null,
     scopes VARCHAR(280) not null,
-    system_account BOOLEAN not null,
     created_at TIMESTAMP not null,
     updated_at TIMESTAMP not null
 );

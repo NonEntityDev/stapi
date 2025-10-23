@@ -1,6 +1,7 @@
 Feature: Managing client accounts.
 
   Background:
+    * configure headers = { Content-Type: 'application/json', Accept: 'application/json' }
     * def clientAccounts = call read("client/listAll-clientAccount.feature")
     * def idsToDelete = karate.map(clientAccounts.response, function(entry) { return entry.clientId; })
     * karate.forEach(idsToDelete, function(id) { karate.call("client/remove-clientAccount.feature", { clientId: id }); })
@@ -12,11 +13,35 @@ Feature: Managing client accounts.
     Then status 200
     And match response == []
 
-    * def clientB = call read("client/create-clientAccount.feature") { title: "Test Client B", description: "Client created during the tests.", alias: "client.b", clientSecret: "password", scope: "MANAGE_CLIENTS" }
-    * match clientB.responseStatus == 200
+    * def clientPayloadB =
+      """
+      {
+        title: "Test Client B",
+        description: "Client created during tests.",
+        alias: "client.b",
+        clientSecret: "password",
+        scopes: ["client.all"],
+        parameters: [
+          { name: "TEMPLATE", value: "Insert Mustache template here." }
+        ]
+      }
+      """
+    * def clientB = call read("client/create-clientAccount.feature") { payload: #(clientPayloadB) }
 
-    * def clientA = call read("client/create-clientAccount.feature") { title: "Test Client A", description: "Client created during the tests.", alias: "client.a", clientSecret: "password", scope: "MANAGE_CLIENTS" }
-    * match clientA.responseStatus == 200
+    * def clientPayloadA =
+      """
+      {
+        title: "Test Client A",
+        description: "Client created during tests.",
+        alias: "client.a",
+        clientSecret: "password",
+        scopes: ["client.all"],
+        parameters: [
+          { name: "TEMPLATE", value: "Insert Mustache template here." }
+        ]
+      }
+      """
+    * def clientA = call read("client/create-clientAccount.feature") { payload: #(clientPayloadA) }
 
     Given path "/api/v1/clients"
     When method get
@@ -31,10 +56,10 @@ Feature: Managing client accounts.
     Given request
       """
       {
-        "title": "Test Client",
-        "description": "Client created during the tests.",
-        "alias": "TEST",
-        "scopes": [
+        title: "Test Client",
+        description: "Client created during the tests.",
+        alias: "TEST",
+        scopes: [
           "CLIENT_MANAGEMENT",
           "SEND_MESSAGE"
         ]
@@ -49,13 +74,16 @@ Feature: Managing client accounts.
     Given request
       """
       {
-        "title": "Test Client",
-        "description": "Client created during the tests.",
-        "alias": "TEST",
-        "clientSecret": "password",
-        "scopes": [
+        title: "Test Client",
+        description: "Client created during the tests.",
+        alias: "TEST",
+        clientSecret: "password",
+        scopes: [
           "CLIENT_MANAGEMENT",
           "SEND_MESSAGE"
+        ],
+        parameters: [
+          { "name": "TEMPLATE", "value": "Insert mustache template here." }
         ]
       }
       """
@@ -67,17 +95,21 @@ Feature: Managing client accounts.
     And match response.description == "Client created during the tests."
     And match response.alias == "TEST"
     And match response.scopes contains only ["CLIENT_MANAGEMENT", "SEND_MESSAGE"]
+    And match response.parameters == [{ "name": "TEMPLATE", "value": "Insert mustache template here.", "modifiedAt": "#present" }]
 
     Given request
       """
       {
-        "title": "Test Client",
-        "description": "Client created during the tests.",
-        "alias": "TEST",
-        "clientSecret": "password",
-        "scopes": [
+        title: "Test Client",
+        description: "Client created during the tests.",
+        alias: "TEST",
+        clientSecret: "password",
+        scopes: [
           "CLIENT_MANAGEMENT",
           "SEND_MESSAGE"
+        ],
+        parameters: [
+          { "name": "TEMPLATE", "value": "Insert mustache template here." }
         ]
       }
       """
@@ -89,8 +121,20 @@ Feature: Managing client accounts.
 
   @client_account @remove
   Scenario: Removing a client account.
-    * def client = call read("client/create-clientAccount.feature") { title: "Test Client", description: "Client created during the tests.", alias: "TEST_REMOVAL", clientSecret: "password", scope: "MANAGE_CLIENTS" }
-    * match client.responseStatus == 200
+    * def clientPayload =
+      """
+      {
+        title: "Test Client",
+        description: "Client created during tests.",
+        alias: "TEST_REMOVAL",
+        clientSecret: "password",
+        scopes: ["client.all"],
+        parameters: [
+          { name: "TEMPLATE", value: "Insert Mustache template here." }
+        ]
+      }
+      """
+    * def client = call read("client/create-clientAccount.feature") { payload: #(clientPayload) }
 
     Given path "/api/v1/clients/" + client.response.clientId
     When method delete
@@ -104,15 +148,27 @@ Feature: Managing client accounts.
 
   @client_account @update
   Scenario: Updating existing client account.
-    * def client = call read("client/create-clientAccount.feature") { title: "Test Client", description: "Client created during the tests.", alias: "TEST_UPDATE", clientSecret: "password", scope: "MANAGE_CLIENTS" }
-    * match client.responseStatus == 200
+    * def clientPayload =
+      """
+      {
+        title: "Test Client",
+        description: "Client created during tests.",
+        alias: "TEST_UPDATE",
+        clientSecret: "password",
+        scopes: ["MANAGE_CLIENTS"],
+        parameters: [
+          { name: "TEMPLATE", value: "Insert Mustache template here." }
+        ]
+      }
+      """
+    * def client = call read("client/create-clientAccount.feature") { payload: #(clientPayload) }
 
     Given request
       """
       {
-        "title": "Updated Test Client",
-        "description": "Client updated during tests.",
-        "alias": ""
+        title: "Updated Test Client",
+        description: "Client updated during tests.",
+        alias: ""
       }
       """
     And path "/api/v1/clients/" + client.response.clientId
@@ -124,9 +180,12 @@ Feature: Managing client accounts.
     Given request
       """
       {
-        "title": "Updated Test Client",
-        "description": "Client updated during tests.",
-        "alias": "TEST_UPDATED"
+        title: "Updated Test Client",
+        description: "Client updated during tests.",
+        alias: "TEST_UPDATED",
+        parameters: [
+          { name: "TEMPLATE", value: "Insert Mustache template here." }
+        ]
       }
       """
     And path "/api/v1/clients/" + client.response.clientId
@@ -136,17 +195,35 @@ Feature: Managing client accounts.
     And match response.title == "Updated Test Client"
     And match response.description == "Client updated during tests."
     And match response.alias == "TEST_UPDATED"
+    And match response.scopes == ["MANAGE_CLIENTS"]
+    And match response.parameters == [{ name: "TEMPLATE", value: "Insert Mustache template here.", modifiedAt: "#present" }]
     And match response contains { clientSecret: "#notpresent", createdAt: "#present", updatedAt: "#present" }
 
-    * def anotherClient = call read("client/create-clientAccount.feature") { title: "Test Client", description: "Client created during the tests.", alias: "UPDATE", clientSecret: "password", scope: "MANAGE_CLIENTS" }
-    * match anotherClient.responseStatus == 200
+    * def anotherClientPayload =
+      """
+      {
+        title: "Test Client",
+        description: "Client created during tests.",
+        alias: "UPDATE",
+        clientSecret: "password",
+        scopes: ["MANAGE_CLIENTS"],
+        parameters: [
+          { name: "TEMPLATE", value: "Insert Mustache template here." }
+        ]
+      }
+      """
+    * def anotherClient = call read("client/create-clientAccount.feature") { payload: #(anotherClientPayload) }
 
     Given request
       """
       {
-        "title": "Updated Test Client",
-        "description": "Client updated during tests.",
-        "alias": "UPDATE"
+        title: "Updated Test Client",
+        description: "Client updated during tests.",
+        alias: "UPDATE",
+        scopes: ["client.all"],
+        parameters: [
+          { name: "TEMPLATE", value: "Insert Mustache template here." }
+        ]
       }
       """
     And path "/api/v1/clients/" + client.response.clientId
@@ -158,9 +235,13 @@ Feature: Managing client accounts.
     Given request
       """
       {
-        "title": "Updated Test Client",
-        "description": "Client updated during tests.",
-        "alias": "NOT_FOUND"
+        title: "Updated Test Client",
+        description: "Client updated during tests.",
+        alias: "NOT_FOUND",
+        scopes: ["client.all"],
+        parameters: [
+          { name: "TEMPLATE", value: "Insert Mustache template here." }
+        ]
       }
       """
     And path "/api/v1/clients/0e12e4ed-c3df-47c1-bf66-155fa00d3f8d"
@@ -170,14 +251,26 @@ Feature: Managing client accounts.
 
   @client_account @update_credentials
   Scenario: Updating client account credentials.
-    * def client = call read("client/create-clientAccount.feature") { title: "Test Client", description: "Client created during the tests.", alias: "TEST", clientSecret: "password", scope: "MANAGE_CLIENTS" }
-    * match client.responseStatus == 200
+    * def clientPayload =
+      """
+      {
+        title: "Test Client A",
+        description: "Client created during tests.",
+        alias: "client.a",
+        clientSecret: "password",
+        scopes: ["client.all"],
+        parameters: [
+          { name: "TEMPLATE", value: "Insert Mustache template here." }
+        ]
+      }
+      """
+    * def client = call read("client/create-clientAccount.feature") { payload: #(clientPayload) }
 
     Given request
       """
       {
-        "scopes": [],
-        "secret": "password"
+        scopes: [],
+        secret: "password"
       }
       """
     And path "/api/v1/clients/" + client.response.clientId + "/credentials"
@@ -189,21 +282,21 @@ Feature: Managing client accounts.
     Given request
       """
       {
-        "scopes": ["SEND_MESSAGE"],
-        "secret": "updatedPassword"
+        scopes: ["SEND_MESSAGE"],
+        secret: "updatedPassword"
       }
       """
     And path "/api/v1/clients/" + client.response.clientId + "/credentials"
     When method put
     Then status 200
     And match response.clientId == client.response.clientId
-    And match response contains { scopes: "#notpresent", clientSecret: "#notpresent" }
+    And match response contains { scopes: ["SEND_MESSAGE"], clientSecret: "#notpresent" }
 
     Given request
       """
       {
-        "scopes": ["SEND_MESSAGE"],
-        "secret": "updatedPassword"
+        scopes: ["SEND_MESSAGE"],
+        secret: "updatedPassword"
       }
       """
     And path "/api/v1/clients/0e12e4ed-c3df-47c1-bf66-155fa00d3f8d/credentials"
