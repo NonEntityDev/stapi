@@ -2,7 +2,6 @@ package dev.nonentity.stapi.client.contract;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import dev.nonentity.stapi.client.domain.ClientAccount;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

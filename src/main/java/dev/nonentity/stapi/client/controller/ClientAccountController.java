@@ -2,7 +2,6 @@ package dev.nonentity.stapi.client.controller;
 
 import dev.nonentity.stapi.client.contract.CreateClientAccount;
 import dev.nonentity.stapi.client.contract.ExistingClientAccount;
-import dev.nonentity.stapi.client.contract.ExistingClientAccountCredentials;
 import dev.nonentity.stapi.client.contract.UpdateClientAccount;
 import dev.nonentity.stapi.client.contract.UpdateClientAccountCredentials;
 import dev.nonentity.stapi.client.service.ClientAccountService;

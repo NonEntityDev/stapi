@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,13 @@ public class RequestValidationAdvice {
             .map((Map.Entry<String, List<FieldError>> errorsPerField) -> new RequestValidationViolation(errorsPerField.getKey(), errorsPerField.getValue().stream().map(FieldError::getDefaultMessage).collect(Collectors.toSet())))
             .collect(Collectors.toSet());
 
-    InvalidRequestResponse response = new InvalidRequestResponse(validationResult.getTarget().getClass().getSimpleName(), violations);
+    InvalidRequestResponse response = new InvalidRequestResponse(
+            Optional.ofNullable(validationResult.getTarget())
+              .map(Object::getClass)
+              .map(Class::getSimpleName)
+              .orElse("unknown"),
+            violations
+    );
     return ResponseEntity.badRequest().body(response);
   }
 

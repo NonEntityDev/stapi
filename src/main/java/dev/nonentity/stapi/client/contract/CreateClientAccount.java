@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Set;
 
 @Data
